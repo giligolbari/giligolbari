@@ -13,23 +13,23 @@ spec:
         app: {{ .Chart.Name }}
     spec:
       volumes:
-      - name: index-html
-        configMap:
-          name: '{{ .Chart.Name }}-html'
-          defaultMode: 420
+        - name: index-html
+          configMap:
+            name: '{{ .Chart.Name }}-html'
+            defaultMode: 420
       containers:
-        - resources: {}
-          terminationMessagePath: /dev/termination-log
-          name: {{ .Chart.Name }}
-          volumeMounts:
-          - name: index-html
-            mountPath: /tmp/html # this will mount the html.index file to it application location
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.containers.containerPort }}
               protocol: TCP
-          imagePullPolicy: Always
+          volumeMounts:
+            - name: index-html
+              mountPath: /tmp/html # this will mount the index.html file to the application location
+          resources: {}
+          terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
